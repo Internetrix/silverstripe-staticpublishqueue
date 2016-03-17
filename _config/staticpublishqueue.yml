@@ -5,3 +5,27 @@ After: 'framework/*','cms/*'
 FilesystemPublisher:
   include_caching_metadata: true
   disable_realtime: true
+  static_base_url: http://your-domain.co.nz
+  domain_based_caching: true
+Subsite:
+  extensions:
+    - 'PublishableSubsiteExtension'
+SiteTreePublishingEngine:
+  no_cache_list:
+    - PaymentPage
+---
+Name: mysiteconfig_staticpublishqueue
+After: 'staticpublishqueue/*','#mysiteconfig_redirector'
+---
+SiteTree:
+  extensions:
+    - PublishableSiteTree
+    - SiteTreePublishingEngine
+    - FilesystemPublisher('cache', 'html')
+---
+Name: mysiteconfig_redirector
+After: 'staticpublishqueue/*'
+---
+RedirectorPage:
+  extensions:
+    - PublishableRedirectorPage

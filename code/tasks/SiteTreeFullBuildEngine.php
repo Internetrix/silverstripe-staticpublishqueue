@@ -6,6 +6,8 @@
  */
 class SiteTreeFullBuildEngine extends BuildTask {
 
+	protected $title = 'SiteTree Full Build Engine';
+	
 	/**
 	 * @var URLArrayObject
 	 */
@@ -19,7 +21,7 @@ class SiteTreeFullBuildEngine extends BuildTask {
 	 *
 	 * @var string
 	 */
-	protected $description = 'Full cache rebuild: adds all pages on the site to the static publishing queue';
+	protected $description = 'Full cache rebuild: adds all pages on the site to the static publishing queue for Internetrix website';
 
 	/** @var int - chunk size (set via config) */
 	private static $records_per_request = 200;
@@ -130,14 +132,37 @@ class SiteTreeFullBuildEngine extends BuildTask {
 	protected function getAllLivePages() {
 		ini_set('memory_limit', '512M');
 		$oldMode = Versioned::get_reading_mode();
+		
+		$cachedSubsites = null;
+		
 		if(class_exists('Subsite')) {
 			Subsite::disable_subsite_filter(true);
+			
+			$cachedSubsites = Subsite::get()->filter('CanBeCached', true)->getIDList();
+			if($cachedSubsites && sizeof($cachedSubsites) > 0 ){
+				$cachedSubsites[] = 0;
+			}else{
+				$cachedSubsites = array(0);
+			}
+			
 		}
 		if(class_exists('Translatable')) {
 			Translatable::disable_locale_filter();
 		}		
 		Versioned::reading_stage('Live');
-		$pages = DataObject::get("SiteTree");
+		
+		$blacklist = Config::inst()->get('SiteTreePublishingEngine', 'no_cache_list');
+		
+		if(isset($blacklist) && count($blacklist) > 0){
+			$pages = DataObject::get("SiteTree")->exclude('ClassName',$blacklist);
+		}else{
+			$pages = DataObject::get("SiteTree");
+		}
+		
+		if($cachedSubsites){
+			$pages = $pages->filter('SubsiteID', $cachedSubsites);
+		}
+		
 		Versioned::set_reading_mode($oldMode);
 		return $pages;
 	}

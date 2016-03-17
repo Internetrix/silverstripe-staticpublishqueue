@@ -22,8 +22,11 @@ define('CACHE_BASE_DIR', '../cache/'); // Should point to the same folder as Fil
 define('CACHE_CLIENTSIDE_EXPIRY', 5); // How long the client should be allowed to cache for before re-checking
 
 // Optional settings for FilesystemPublisher::$domain_based_mapping=TRUE
+$hostDomain = str_replace('www.', '', $_SERVER['HTTP_HOST']);
+define('CACHE_DEFAULT_DOMAIN', $hostDomain);
 define('CACHE_HOSTMAP_LOCATION', '../subsites/host-map.php');
 define('CACHE_HOMEPAGE_MAP_LOCATION', '../assets/_homepage-map.php');
+define('BASE_URL', '/');
 
 // Calculated constants
 if(!defined('BASE_PATH')) {
@@ -66,7 +69,7 @@ if (CACHE_ENABLED
 	} elseif (file_exists(CACHE_HOSTMAP_LOCATION)) {
 		// Custom mapping through PHP file (assumed FilesystemPublisher::$domain_based_mapping=TRUE)
 		include_once CACHE_HOSTMAP_LOCATION;
-		$subsiteHostmap['default'] = isset($subsiteHostmap['default']) ? $subsiteHostmap['default'] : '';
+		$subsiteHostmap['default'] = isset($subsiteHostmap['default']) ? $subsiteHostmap['default'] : CACHE_DEFAULT_DOMAIN;
 		$cacheDir = (isset($subsiteHostmap[$host]) ? $subsiteHostmap[$host] : $subsiteHostmap['default']) . '/';
 	} else {
 		// No subfolder (for FilesystemPublisher::$domain_based_mapping=FALSE)

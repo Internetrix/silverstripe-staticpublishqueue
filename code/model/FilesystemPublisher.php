@@ -274,9 +274,12 @@ class FilesystemPublisher extends DataExtension {
 			} else {
 				if(is_object($response)) {
 					if($response->getStatusCode() == '301' || $response->getStatusCode() == '302') {
-						$absoluteURL = Director::absoluteURL($response->getHeader('Location'));
 						$result[$origUrl]['redirect'] = $response->getHeader('Location');
-						$content = "<meta http-equiv=\"refresh\" content=\"2; URL=$absoluteURL\">";
+						
+						$urlParts = parse_url($url);
+						$urlSegment = $response->getHeader('Location');
+						$redirectURL = (isset($urlParts['host']) && $urlParts['host']) ? $urlParts['host'].trim($urlSegment, '/') : Director::absoluteURL($urlSegment);
+						$content = "<meta http-equiv=\"refresh\" content=\"2; URL=$redirectURL\">";
 					} else {
 						$content = $response->getBody();
 					}

@@ -189,18 +189,23 @@ class BuildStaticCacheFromQueue extends BuildTask {
 					);
 
 				} else {
+					
+					if(!$subsite->CanBeCached) continue;
+					
 					// Subsite page. Generate all domain variants registered with the subsite.
 					Config::inst()->update('FilesystemPublisher', 'static_publisher_theme', $subsite->Theme);
 
+					$scheme = $subsite->UseSSL ? 'https' : 'http';
+					
 					foreach($subsite->Domains() as $domain) {
 						Config::inst()->update(
 							'FilesystemPublisher',
 							'static_base_url',
-							'http://'.$domain->Domain . Director::baseURL()
+							$scheme.'://'.$domain->Domain . Director::baseURL()
 						);
 
 						$result = singleton("SiteTree")->publishPages(
-							array('http://'.$domain->Domain . Director::baseURL() . $cleanUrl)
+							array($scheme.'://'.$domain->Domain . Director::baseURL() . $cleanUrl)
 						);
 						$results = array_merge($results, $result);
 					}

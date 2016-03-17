@@ -19,6 +19,8 @@ class SiteTreePublishingEngine extends DataExtension {
 	private static $dependencies = array(
 		'urlArrayObject' =>  '%$URLArrayObject'
 	);
+	
+	private static $no_cache_list = array();
 
 	/**
 	 * Queues the urls to be flushed into the queue.
@@ -55,6 +57,10 @@ class SiteTreePublishingEngine extends DataExtension {
 	}
 
 	public function onAfterPublish() {
+		
+		$blacklist = Config::inst()->get('SiteTreePublishingEngine', 'no_cache_list');
+		if(in_array($this->owner->ClassName, $blacklist))return;
+		
 		$context = array(
 			'action' => 'publish'
 		);
