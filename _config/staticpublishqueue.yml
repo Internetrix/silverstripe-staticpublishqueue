@@ -7,9 +7,6 @@ FilesystemPublisher:
   disable_realtime: true
   static_base_url: http://your-domain.co.nz
   domain_based_caching: true
-Subsite:
-  extensions:
-    - 'PublishableSubsiteExtension'
 SiteTreePublishingEngine:
   no_cache_list:
     - PaymentPage

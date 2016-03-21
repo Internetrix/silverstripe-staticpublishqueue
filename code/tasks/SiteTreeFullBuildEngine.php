@@ -135,10 +135,12 @@ class SiteTreeFullBuildEngine extends BuildTask {
 		
 		$cachedSubsites = null;
 		
+		$this->extend('onBeforeAllLivePages', $cachedSubsites);
+		
 		if(class_exists('Subsite')) {
 			Subsite::disable_subsite_filter(true);
 			
-			$cachedSubsites = Subsite::get()->filter('CanBeCached', true)->getIDList();
+			$cachedSubsites = Subsite::get()->getIDList();
 			if($cachedSubsites && sizeof($cachedSubsites) > 0 ){
 				$cachedSubsites[] = 0;
 			}else{
@@ -162,6 +164,8 @@ class SiteTreeFullBuildEngine extends BuildTask {
 		if($cachedSubsites){
 			$pages = $pages->filter('SubsiteID', $cachedSubsites);
 		}
+		
+		$this->extend('onAfterAllLivePages', $cachedSubsites);
 		
 		Versioned::set_reading_mode($oldMode);
 		return $pages;

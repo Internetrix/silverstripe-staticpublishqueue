@@ -190,8 +190,6 @@ class BuildStaticCacheFromQueue extends BuildTask {
 
 				} else {
 					
-					if(!$subsite->CanBeCached) continue;
-					
 					// Subsite page. Generate all domain variants registered with the subsite.
 					Config::inst()->update('FilesystemPublisher', 'static_publisher_theme', $subsite->Theme);
 

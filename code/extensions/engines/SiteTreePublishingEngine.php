@@ -85,6 +85,8 @@ class SiteTreePublishingEngine extends DataExtension {
 	public function collectChanges($context) {
 		increase_time_limit_to();
 		increase_memory_limit_to();
+		
+		$this->extend('onBeforeCollectChanges', $context);
 
 		if (is_callable(array($this->owner, 'objectsToUpdate'))) {
 
@@ -121,6 +123,8 @@ class SiteTreePublishingEngine extends DataExtension {
 			}
 
 		}
+		
+		$this->extend('onAfterCollectChanges', $context);
 
 	}
 
